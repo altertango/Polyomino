@@ -65,7 +65,7 @@ def get_unique(c):
     for i in c:
         u_b=True
         for j in u:
-            if compare(trans(i),trans(j)): 
+            if comp_all(trans(i),trans(j)): 
                 u_b=False
         if u_b: u.append(i)
     print(len(c),len(u))
