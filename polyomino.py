@@ -3,11 +3,13 @@ import itertools
 from PIL import Image
 import numpy as np
 from os.path import isfile
+import copy
 
 #Function to get the names of every folder in a given path (mp)
 def onlyfolders(mp):
     return [f for f in os.listdir(mp) if not isfile(mp+chr(92)+f)]
 
+#make a folder
 def mk_folder(folder_name):
     path=os.getcwd()
     if folder_name not in onlyfolders(path):
@@ -37,6 +39,39 @@ def pt_to_im(pt):
     return im
 
 
+def trans(a):
+    minax=4
+    minay=4
+    for i in a:
+        if i[0]<minax: minax=i[0]
+        if i[1]<minay: minay=i[1]
+    return [(i[0]-minax+1,i[1]-minay+1) for i in a]
+    
+def rotate_shape(a):
+    return [(i[1],i[0]) for i in a]
+
+def compare(a,b):
+    #print(a,b)
+    return set(a)==set(b)
+
+
+
+def comp_all(a,b):
+    
+    return (compare(a,b) or compare(rotate_shape(a),b))
+
+def get_unique(c):
+    u=[c[0]]
+    for i in c:
+        u_b=True
+        for j in u:
+            if compare(trans(i),trans(j)): 
+                u_b=False
+        if u_b: u.append(i)
+    print(len(c),len(u))
+    return u
+
+
 
 #here are all possible squares to be filled
 a=[
@@ -54,20 +89,27 @@ a=[
 [3,4]]
 
 #List of possible combinations for 4 squares
-c4=itertools.combinations(a,4)
+c4=[i for i in itertools.combinations(a,4)]
 #for 5
-c5=itertools.combinations(a,5)
+c5=[i for i in itertools.combinations(a,5)]
+
+
+c4_u=get_unique(c4)
+c5_u=get_unique(c5)
+            
+       
 
 #convert the points into images and save them in a folder called 4 and other called 5
 it=0
 mk_folder("4")
-for pt in c4:
+for pt in c4_u:
+    #print(it)
     outfile=str(it)+".png"
     pt_to_im(pt).save("4\\"+outfile, "PNG")
     it+=1
 it=0
 mk_folder("5")
-for pt in c5:
+for pt in c5_u:
     outfile=str(it)+".png"
     pt_to_im(pt).save("5\\"+outfile, "PNG")
     it+=1
