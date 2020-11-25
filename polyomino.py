@@ -38,7 +38,7 @@ def pt_to_im(pt):
     im = im.resize(newsize,resample=Image.BOX)
     return im
 
-
+#move to a corner to compare without taking position into account
 def trans(a):
     minax=4
     minay=4
@@ -46,19 +46,23 @@ def trans(a):
         if i[0]<minax: minax=i[0]
         if i[1]<minay: minay=i[1]
     return [(i[0]-minax+1,i[1]-minay+1) for i in a]
-    
-def rotate_shape(a):
-    return [(i[1],i[0]) for i in a]
 
+#rotate by 90 degrees
+def rt90(a):
+    m=0
+    for i in a:
+        if i[0]>m: m=i[0]
+    return [(i[1],-i[0]+m+1) for i in a]
+
+#compare points
 def compare(a,b):
     #print(a,b)
     return set(a)==set(b)
 
 
-
+#compare for each rotation
 def comp_all(a,b):
-    
-    return (compare(a,b) or compare(rotate_shape(a),b))
+    return (compare(a,b) or compare(rt90(a),b) or compare(rt90(rt90(a)),b) or compare(rt90(rt90(rt90(a))),b))
 
 def get_unique(c):
     u=[c[0]]
@@ -96,8 +100,6 @@ c5=[i for i in itertools.combinations(a,5)]
 
 c4_u=get_unique(c4)
 c5_u=get_unique(c5)
-            
-       
 
 #convert the points into images and save them in a folder called 4 and other called 5
 it=0
